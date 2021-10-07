@@ -1,4 +1,4 @@
-import { Message, Stan } from "node-nats-streaming";
+import { Message, Stan, Subscription } from "node-nats-streaming";
 
 export abstract class Listener {
   abstract subject: string;
@@ -21,22 +21,18 @@ export abstract class Listener {
   }
 
   listen() {
-    const subscription = this.client.subscribe(
+    const subscription: Subscription = this.client.subscribe(
       this.subject,
       this.queueGroupName,
       this.subscriptionOptions()
     );
 
-    if (subscription) {
-      subscription.on("message", (msg: Message) => {
-        console.log(
-          `Message received: ${this.subject} / ${this.queueGroupName}`
-        );
+    subscription.on("message", (msg: Message) => {
+      console.log(`Message received: ${this.subject} / ${this.queueGroupName}`);
 
-        const parsedData = this.parseMessage(msg);
-        this.onMessage(parsedData, msg);
-      });
-    }
+      const parsedData = this.parseMessage(msg);
+      this.onMessage(parsedData, msg);
+    });
   }
 
   parseMessage(msg: Message) {
