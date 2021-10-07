@@ -27,12 +27,16 @@ export abstract class Listener {
       this.subscriptionOptions()
     );
 
-    subscription.on("message", (msg: Message) => {
-      console.log(`Message received: ${this.subject} / ${this.queueGroupName}`);
+    if (subscription) {
+      subscription.on("message", (msg: Message) => {
+        console.log(
+          `Message received: ${this.subject} / ${this.queueGroupName}`
+        );
 
-      const parsedData = this.parseMessage(msg);
-      this.onMessage(parsedData, msg);
-    });
+        const parsedData = this.parseMessage(msg);
+        this.onMessage(parsedData, msg);
+      });
+    }
   }
 
   parseMessage(msg: Message) {
